@@ -24,6 +24,7 @@ contract DeployRaffle is Script {
 
 
         vm.startBroadcast();
+        //we initiate vm.startBroadcast to deploy our reffle contract to our network
         Raffle raffle = new Raffle(
             subscriptionId,
             gasLane,

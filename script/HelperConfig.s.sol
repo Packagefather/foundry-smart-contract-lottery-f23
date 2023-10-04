@@ -2,6 +2,7 @@
 pragma solidity ^0.8.19;
 
 // import {VRFCoordinatorV2Mock} from "../test/mocks/VRFCoordinatorV2Mock.sol";
+//this is a contract inported in here.
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
 //import {LinkToken} from "../test/mocks/LinkToken.sol";
 import {Script} from "forge-std/Script.sol";
@@ -52,7 +53,7 @@ contract HelperConfig is Script {
 
     function getSepoliaEthConfig()
         public
-        view
+        pure
         returns (NetworkConfig memory sepoliaNetworkConfig)
     {
         sepoliaNetworkConfig = NetworkConfig({
@@ -67,6 +68,7 @@ contract HelperConfig is Script {
         });
     }
 
+//This one is neither pure or view becasue we actually send transaction when we deploy the vrf
     function getOrCreateAnvilEthConfig()
         public
         returns (NetworkConfig memory anvilNetworkConfig)
@@ -76,10 +78,14 @@ contract HelperConfig is Script {
             return activeNetworkConfig;
         }
 
-        uint96 baseFee = 0.25 ether;
-        uint96 gasPriceLink = 1e9;
+        uint96 baseFee = 0.25 ether; //0.25 LINK , remember we are paying in LINK, 
+        //so the 0.25 ether represents 0.25 LINK 
+        uint96 gasPriceLink = 1e9; //1 gwei LINK
 
         vm.startBroadcast(/*DEFAULT_ANVIL_PRIVATE_KEY*/);
+        //we initiate this vm.startBroadcast to deploy to our network.
+
+        //this will return the address of our cordinator as "vrfCoordinatorV2Mock"
         VRFCoordinatorV2Mock vrfCoordinatorV2Mock = new VRFCoordinatorV2Mock(
             baseFee,
             gasPriceLink

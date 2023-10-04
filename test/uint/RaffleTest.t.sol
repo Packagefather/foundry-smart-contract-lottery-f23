@@ -12,6 +12,9 @@ import {Test, console} from "forge-std/Test.sol";
 // import {CreateSubscription} from "../../script/Interactions.s.sol";
 
 contract RaffleTest is Test {
+        /*Events */
+        event RaffleEntered(address indexed player);
+
         Raffle raffle;
         HelperConfig helperConfig;
 
@@ -40,12 +43,66 @@ contract RaffleTest is Test {
             //,
 
         ) = helperConfig.activeNetworkConfig();
-        //vm.deal(PLAYER, STARTING_USER_BALANCE);
+        vm.deal(PLAYER, STARTING_USER_BALANCE);
 
        
     }
 
      function testRaffleInitializesInOpenState() public view {
         assert(raffle.getRaffleState() == Raffle.RaffleState.OPEN);
+    }
+
+     /////////////////////////
+    // enterRaffle         //
+    /////////////////////////
+
+    function testRaffleRevertsWHenYouDontPayEnough() public {
+        // Arrange
+        vm.prank(PLAYER);
+        // Act / Assert
+        vm.expectRevert(Raffle.Raffle__NotEnoughEthSent.selector);
+        //here we are saying, expect this error stated in the raffle code
+        raffle.enterRaffle();
+        //we call enterRaffle without seinding any value. 
+        //it should pass by failing with the error stated
+    }
+
+    function testRaffleRecordsPlayerWhenTheyEnter() public {
+        // Arrange
+        vm.prank(PLAYER);
+        // Act
+        raffle.enterRaffle{value: raffleEntranceFee}();
+        // Assert
+        address playerRecorded = raffle.getPlayer(0);
+        assert(playerRecorded == PLAYER);
+    }
+
+    /**
+         * @EVENTS
+         * Event Signature by foundry
+         * function expectEmit(
+         * bool checkTopic1,
+         * bool checkTopic2,
+         * bool checkTopic3,
+         * bool checkData
+         * ) external;
+         * 
+         *  function expectEmit(
+         * bool checkTopic1,
+         * bool checkTopic2,
+         * bool checkTopic3,
+         * bool checkData,
+         * address emitter
+         * ) external;
+         * 
+         */
+    function testEmitsEventOnEntrance() public {
+        // Arrange
+        vm.prank(PLAYER);
+
+        // Act / Assert
+        vm.expectEmit(true, false, false, false, address(raffle));
+        emit RaffleEntered(PLAYER);
+        raffle.enterRaffle{value: raffleEntranceFee}();
     }
 }
