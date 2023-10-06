@@ -2,9 +2,9 @@
 pragma solidity ^0.8.19;
 
 // import {VRFCoordinatorV2Mock} from "../test/mocks/VRFCoordinatorV2Mock.sol";
-//this is a contract inported in here.
+//this is a contract imported in here.
 import {VRFCoordinatorV2Mock} from "@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock.sol";
-//import {LinkToken} from "../test/mocks/LinkToken.sol";
+import {LinkToken} from "../test/mocks/LinkToken.sol";
 import {Script} from "forge-std/Script.sol";
 
 contract HelperConfig is Script {
@@ -17,7 +17,7 @@ contract HelperConfig is Script {
         uint256 raffleEntranceFee;
         uint32 callbackGasLimit;
         address vrfCoordinatorV2;
-        // address link;
+        address link;
         // uint256 deployerKey;
     }
 
@@ -45,8 +45,8 @@ contract HelperConfig is Script {
             automationUpdateInterval: 30, // 30 seconds
             raffleEntranceFee: 0.01 ether,
             callbackGasLimit: 500000, // 500,000 gas
-            vrfCoordinatorV2: 0x271682DEB8C4E0901D1a1550aD2e64D568E69909
-            // link: 0x514910771AF9Ca656af840dff83E8264EcF986CA,
+            vrfCoordinatorV2: 0x271682DEB8C4E0901D1a1550aD2e64D568E69909,
+            link: 0x514910771AF9Ca656af840dff83E8264EcF986CA
             // deployerKey: vm.envUint("PRIVATE_KEY")
         });
     }
@@ -62,8 +62,8 @@ contract HelperConfig is Script {
             automationUpdateInterval: 30, // 30 seconds
             raffleEntranceFee: 0.01 ether,
             callbackGasLimit: 500000, // 500,000 gas
-            vrfCoordinatorV2: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625
-            // link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            vrfCoordinatorV2: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
             // deployerKey: vm.envUint("PRIVATE_KEY")
         });
     }
@@ -104,8 +104,8 @@ contract HelperConfig is Script {
             automationUpdateInterval: 30, // 30 seconds
             raffleEntranceFee: 0.01 ether,
             callbackGasLimit: 500000, // 500,000 gas
-            vrfCoordinatorV2: address(vrfCoordinatorV2Mock)
-            // link: address(link),
+            vrfCoordinatorV2: address(vrfCoordinatorV2Mock),
+            link: address(link),
             // deployerKey: DEFAULT_ANVIL_PRIVATE_KEY
         });
     }

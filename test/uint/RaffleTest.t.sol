@@ -13,7 +13,7 @@ import {Test, console} from "forge-std/Test.sol";
 
 contract RaffleTest is Test {
         /*Events */
-        event RaffleEntered(address indexed player);
+        event EnteredRaffle(address indexed player);
 
         Raffle raffle;
         HelperConfig helperConfig;
@@ -78,7 +78,7 @@ contract RaffleTest is Test {
     }
 
     /**
-         * @EVENTS
+         * EVENTS
          * Event Signature by foundry
          * function expectEmit(
          * bool checkTopic1,
@@ -102,7 +102,25 @@ contract RaffleTest is Test {
 
         // Act / Assert
         vm.expectEmit(true, false, false, false, address(raffle));
-        emit RaffleEntered(PLAYER);
+        emit EnteredRaffle(PLAYER);
+        raffle.enterRaffle{value: raffleEntranceFee}();
+    }
+
+    function testCantEnterWhileRaffleIsCalculating() public {
+        // Arrange
+        vm.prank(PLAYER);
+        raffle.enterRaffle{value: raffleEntranceFee}();
+        vm.warp(block.timestamp + automationUpdateInterval + 1); //sets the blocktimestamp
+        //so here we are fast forwad=rding the time to the interval required to pass
+        //then adding extra 1 second to it
+        vm.roll(block.number + 1);
+        raffle.performUpkeep(""); //since time is passed, we should be able to call this
+        //this performUpkeep in our contract is for admin to call on random number and pick a lucky player 
+        //from list of entered players
+
+        // Act / Assert
+        vm.expectRevert(Raffle.Raffle__RaffleNotOpen.selector);
+        vm.prank(PLAYER);
         raffle.enterRaffle{value: raffleEntranceFee}();
     }
 }
