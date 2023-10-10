@@ -69,6 +69,7 @@ contract Raffle is VRFConsumerBaseV2{
     /** Events */
     event  EnteredRaffle(address indexed player);
     event PickedWinner (address indexed winner);
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
 
 
@@ -118,6 +119,9 @@ contract Raffle is VRFConsumerBaseV2{
         //notice that we have given a variable name to the data type in the 
         //return statement, with this we do not have to explicitly write, return
         //this or that. it just returns those things in the bracket on its own
+
+        //this checkupkeep is like asking if the peform upkeep has been done already
+        //or it is time enough to do it or if the balance is enough to do it.
         bool timeHasPassed = (block.timestamp - s_lastTimeStamp) >= i_interval;
         bool isOpen = RaffleState.OPEN == s_raffleState;
         bool hasBalance = address(this).balance > 0;
@@ -144,13 +148,14 @@ contract Raffle is VRFConsumerBaseV2{
             );
         }
         s_raffleState = RaffleState.CALCULATING;
-        i_vrfCoordinator.requestRandomWords(
+        uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane, //keyhash
             i_subscriptionId, //the id to fund with link to make request
             REQUEST_CONFIRMATIONS, 
             i_callbackGasLimit, //to make sure we dont over spend on this call
             NUM_WORDS //number of random numbers we want
         );
+        emit RequestedRaffleWinner(requestId);
     }
     
     //CEI: Checks, Effects, Interactions
@@ -169,7 +174,7 @@ contract Raffle is VRFConsumerBaseV2{
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         address payable winner = s_players[indexOfWinner];
         s_recentWinner = winner;
-        s_raffleState = RaffleState.CALCULATING;
+        s_raffleState = RaffleState.OPEN;
 
         s_players = new address payable[](0);
         s_lastTimeStamp = block.timestamp;
@@ -196,7 +201,28 @@ contract Raffle is VRFConsumerBaseV2{
         return s_raffleState;
     }
 
+    function getInterval()  external view returns (uint256) {
+        return i_interval;
+    }
+
     function getPlayer(uint256 indexOfPlayer) external view returns(address){
         return s_players[indexOfPlayer];
+    }
+
+    function getRaffleBalance() external view returns(uint256){
+        return address(this).balance;
+    }
+
+
+    function getRecentWinner() external view returns(address){
+        return s_recentWinner;
+    }
+
+    function getLengthOfPlayers() external view returns(uint256){
+        return s_players.length;
+    }
+
+    function getLastTimeStamp() external view returns(uint256){
+        return s_lastTimeStamp;
     }
 }

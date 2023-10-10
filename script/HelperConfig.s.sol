@@ -18,7 +18,7 @@ contract HelperConfig is Script {
         uint32 callbackGasLimit;
         address vrfCoordinatorV2;
         address link;
-        // uint256 deployerKey;
+        uint256 deployerKey;
     }
 
     uint256 public DEFAULT_ANVIL_PRIVATE_KEY =
@@ -46,14 +46,14 @@ contract HelperConfig is Script {
             raffleEntranceFee: 0.01 ether,
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinatorV2: 0x271682DEB8C4E0901D1a1550aD2e64D568E69909,
-            link: 0x514910771AF9Ca656af840dff83E8264EcF986CA
-            // deployerKey: vm.envUint("PRIVATE_KEY")
+            link: 0x514910771AF9Ca656af840dff83E8264EcF986CA,
+            deployerKey: vm.envUint("PRIVATE_KEY")
         });
     }
 
     function getSepoliaEthConfig()
         public
-        pure
+        view
         returns (NetworkConfig memory sepoliaNetworkConfig)
     {
         sepoliaNetworkConfig = NetworkConfig({
@@ -63,8 +63,8 @@ contract HelperConfig is Script {
             raffleEntranceFee: 0.01 ether,
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinatorV2: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
-            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789
-            // deployerKey: vm.envUint("PRIVATE_KEY")
+            link: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+            deployerKey: vm.envUint("PRIVATE_KEY")
         });
     }
 
@@ -82,7 +82,7 @@ contract HelperConfig is Script {
         //so the 0.25 ether represents 0.25 LINK 
         uint96 gasPriceLink = 1e9; //1 gwei LINK
 
-        vm.startBroadcast(/*DEFAULT_ANVIL_PRIVATE_KEY*/);
+        vm.startBroadcast(DEFAULT_ANVIL_PRIVATE_KEY);
         //we initiate this vm.startBroadcast to deploy to our network.
 
         //this will return the address of our cordinator as "vrfCoordinatorV2Mock"
@@ -91,7 +91,7 @@ contract HelperConfig is Script {
             gasPriceLink
         );
 
-        //LinkToken link = new LinkToken();
+        LinkToken link = new LinkToken();
         vm.stopBroadcast();
 
         emit HelperConfig__CreatedMockVRFCoordinator(
@@ -106,7 +106,7 @@ contract HelperConfig is Script {
             callbackGasLimit: 500000, // 500,000 gas
             vrfCoordinatorV2: address(vrfCoordinatorV2Mock),
             link: address(link),
-            // deployerKey: DEFAULT_ANVIL_PRIVATE_KEY
+            deployerKey: DEFAULT_ANVIL_PRIVATE_KEY
         });
     }
 }
