@@ -10,7 +10,7 @@ contract DeployRaffle is Script {
 
     function run() external returns (Raffle, HelperConfig) {
         HelperConfig helperConfig = new HelperConfig(); // This comes with our mocks!
-        // AddConsumer addConsumer = new AddConsumer();
+
         (
             uint64 subscriptionId,
             bytes32 gasLane,
@@ -25,20 +25,21 @@ contract DeployRaffle is Script {
         if (subscriptionId == 0) {
             CreateSubscription createSubscription = new CreateSubscription();
             subscriptionId = createSubscription.createSubscription(
-                vrfCoordinatorV2
-                /*deployerKey*/
+                vrfCoordinatorV2,
+                deployerKey
             );
 
             FundSubscription fundSubscription = new FundSubscription();
             fundSubscription.fundSubscription(
                 vrfCoordinatorV2,
                 subscriptionId,
-                link
+                link,
+                deployerKey
             );
         
         }
 
-        vm.startBroadcast();
+        vm.startBroadcast(deployerKey);
         //we initiate vm.startBroadcast to deploy our reffle contract to our network
         Raffle raffle = new Raffle(
             subscriptionId,

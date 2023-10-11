@@ -18,18 +18,18 @@ contract CreateSubscription is Script {
             ,
             ,
             address vrfCoordinatorV2,
-            address link,
+            ,
             uint256 deployerKey
         ) = helperConfig.activeNetworkConfig();
-        return createSubscription(vrfCoordinatorV2);
+        return createSubscription(vrfCoordinatorV2, deployerKey);
     }
 
     function createSubscription(
-        address vrfCoordinatorV2
-        //uint256 deployerKey
+        address vrfCoordinatorV2,
+        uint256 deployerKey
     ) public returns (uint64) {
         console.log("Creating subscription on chainId: ", block.chainid);
-        vm.startBroadcast(/*deployerKey*/);
+        vm.startBroadcast(deployerKey);
         uint64 subId = VRFCoordinatorV2Mock(vrfCoordinatorV2)
             .createSubscription();
         vm.stopBroadcast();
@@ -59,19 +59,20 @@ contract FundSubscription is Script {
             address link,
             uint256 deployerKey
         ) = helperConfig.activeNetworkConfig();
-        fundSubscription(vrfCoordinatorV2, subId, link);
+        fundSubscription(vrfCoordinatorV2, subId, link, deployerKey);
     }
 
     function fundSubscription(
         address vrfCoordinatorV2,
         uint64 subId,
-        address link
+        address link,
+        uint256 deployerKey
     ) public {
         console.log("Funding subscription: ", subId);
         console.log("Using vrfCoordinator: ", vrfCoordinatorV2);
         console.log("On ChainID: ", block.chainid);
         if (block.chainid == 31337) {
-            vm.startBroadcast();
+            vm.startBroadcast(deployerKey);
             VRFCoordinatorV2Mock(vrfCoordinatorV2).fundSubscription(
                 subId,
                 FUND_AMOUNT
@@ -82,7 +83,7 @@ contract FundSubscription is Script {
             console.log(msg.sender);
             console.log(LinkToken(link).balanceOf(address(this)));
             console.log(address(this));
-            vm.startBroadcast();
+            vm.startBroadcast(deployerKey);
             LinkToken(link).transferAndCall(
                 vrfCoordinatorV2,
                 FUND_AMOUNT,
@@ -126,7 +127,7 @@ contract AddConsumer is Script {
             ,
             ,
             address vrfCoordinatorV2,
-            address link,
+            ,
             uint256 deployerKey
             
         ) = helperConfig.activeNetworkConfig();
