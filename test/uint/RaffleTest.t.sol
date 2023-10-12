@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.21;
 
 import {DeployRaffle} from "../../script/DeployRaffle.s.sol";
 import {Raffle} from "../../src/Raffle.sol";
@@ -308,7 +308,7 @@ contract RaffleTest is Test {
     function testFulfillRandomWordsCanOnlyBeCalledAfterPerformUpkeep(uint256 randomRequestId)
         public
         raffleEnteredAndTimePassed
-        
+        skipFork
     {
         // Arrange
         // Act / Assert
@@ -327,6 +327,7 @@ contract RaffleTest is Test {
     function testFulfillRandomWordsPicksAWinnerResetsAndSendsMoney()
         public
         raffleEnteredAndTimePassed
+        skipFork
         
     {
         //address expectedWinner = address(1);
@@ -369,9 +370,9 @@ contract RaffleTest is Test {
        
 
         assert(raffle.getRecentWinner() != address(0));
-        //assert(uint256(raffleState) == 0);
-        //assert(raffle.getLengthOfPlayers() == 0);
-        //assert(endingTimeStamp > startingTimeStamp);
+        assert(uint256(raffleState) == 0);
+        assert(raffle.getLengthOfPlayers() == 0);
+        assert(endingTimeStamp > startingTimeStamp);
         assert(winnerBalance == STARTING_USER_BALANCE + prize - raffleEntranceFee);
         
     }
